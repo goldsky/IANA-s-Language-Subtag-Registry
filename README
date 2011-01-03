@@ -1,8 +1,9 @@
 Language Tags based on Internet Assigned Numbers Authority (IANA)'s Registry
 PHP language class
+1.1
 
 @author  goldsky <goldsky@fastmail.fm>
-@date    Dec 25, 2010
+@date    Jan 04, 2011
 @access  public
 @link    http://www.iana.org/assignments/language-subtag-registry
 @package LanguageSubtagRegistry

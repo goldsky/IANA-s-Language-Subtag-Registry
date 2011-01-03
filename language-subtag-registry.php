@@ -52,7 +52,7 @@ class LanguageSubtagRegistry {
                 }
 
                 list($key, $val) = explode(':', $v);
-                $languagesArray[$regKey][$key] = trim($val);
+                $languagesArray[$regKey][$key][] = trim($val);
             }
         }
 
@@ -66,14 +66,20 @@ class LanguageSubtagRegistry {
      */
     public function languagesAssocArray($arrayKey) {
         $languagesArray = $this->languagesArray();
-
         $languagesAssocArray = array();
-        foreach ($languagesArray as $regKey => $regVal) {
-            if (empty($regVal[$arrayKey])) {
-                unset($languagesArray[$regKey]);
-                continue;
+        foreach ($languagesArray as $langKey => $langVal) {
+            foreach ($langVal as $langValKey => $langValVal) {
+                if (empty($langValVal)
+                    || !empty($langVal['Deprecated'])
+                    || empty($langVal[$arrayKey])
+                ) {
+                    unset($languagesArray[$langKey[$langValKey]]);
+                    continue;
+                }
+                foreach ($langVal[$arrayKey] as $arrayKeyKey => $arrayKeyVal) {
+                    $languagesAssocArray[$arrayKeyVal] = $languagesArray[$langKey];
+                }
             }
-            $languagesAssocArray[$regVal[$arrayKey]] = $regVal;
         }
         
         return $languagesAssocArray;
