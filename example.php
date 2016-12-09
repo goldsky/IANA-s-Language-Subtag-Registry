@@ -8,6 +8,9 @@
  * @link    http://www.iana.org/assignments/language-subtag-registry
  * @package LanguageSubtagRegistry
  */
+// for security only, comment this to run the script
+die();
+
 include_once './language-subtag-registry.php';
 $ianaLstr = new LanguageSubtagRegistry();
 $ianaLstr->readSource('language-subtag-registry');

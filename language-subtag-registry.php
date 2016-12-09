@@ -1,27 +1,32 @@
 <?php
 
 /**
- * Language Tags based on Internet Assigned Numbers Authority (IANA)'s Registry
+ * Language Tags based on Internet Assigned Numbers Authority (IANA)'s Registry.
+ *
  * @author  goldsky <goldsky@fastmail.fm>
- * @date    Dec 25, 2010
- * @access  public
+ * @date    Dec 9, 2016
+ *
  * @link    http://www.iana.org/assignments/language-subtag-registry
- * @package LanguageSubtagRegistry
  */
-class LanguageSubtagRegistry {
+class LanguageSubtagRegistry
+{
+    const VERSION = '1.2';
 
-    var $src;
+    protected $src;
 
-    public function __construct() {
-
+    public function __construct()
+    {
     }
 
     /**
-     * Reading IANA's source by absolute path/URL
-     * @param   string  $filePath   filepath
-     * @return  bool    TRUE | FALSE
+     * Reading IANA's source by absolute path/URL.
+     *
+     * @param string $filePath filepath
+     *
+     * @return bool TRUE | FALSE
      */
-    public function readSource($filePath) {
+    public function readSource($filePath)
+    {
         if (!file_exists($filePath)) {
             return false;
         }
@@ -33,16 +38,17 @@ class LanguageSubtagRegistry {
     }
 
     /**
-     * Parse the source string from the file content into a big array
-     * @return  array   non-associative array
+     * Parse the source string from the file content into a big array.
+     *
+     * @return array non-associative array
      */
-    public function languagesArray() {
-
+    public function languagesArray()
+    {
         $registries = explode('%%', $this->src);
         array_shift($registries); // File-Date: 2010-10-26
         $languagesArray = array();
         foreach ($registries as $regKey => $regVal) {
-            $regVal = str_replace("\n  ", " ", $regVal);
+            $regVal = str_replace("\n  ", ' ', $regVal);
             $rows = explode("\n", $regVal);
 
             foreach ($rows as $k => $v) {
@@ -52,7 +58,11 @@ class LanguageSubtagRegistry {
                 }
 
                 list($key, $val) = explode(':', $v);
-                $languagesArray[$regKey][$key][] = trim($val);
+                if ($key === 'Description' || $key === 'Prefix') {
+                    $languagesArray[$regKey][$key][] = trim($val);
+                } else {
+                    $languagesArray[$regKey][$key] = trim($val);
+                }
             }
         }
 
@@ -61,39 +71,38 @@ class LanguageSubtagRegistry {
 
     /**
      * Swap the key of language array by the given key
-     * @param   string  $arrayKey   parent key
+     * @param   string  $parentKey  parent key
      * @return  array   associative array
      */
-    public function languagesAssocArray($arrayKey) {
+    public function languagesAssocArray($parentKey)
+    {
+        if (empty($parentKey)) {
+            return;
+        }
         $languagesArray = $this->languagesArray();
         $languagesAssocArray = array();
-        foreach ($languagesArray as $langKey => $langVal) {
-            foreach ($langVal as $langValKey => $langValVal) {
-                if (empty($langValVal)
-                    || !empty($langVal['Deprecated'])
-                    || empty($langVal[$arrayKey])
-                ) {
-                    unset($languagesArray[$langKey[$langValKey]]);
-                    continue;
-                }
-                foreach ($langVal[$arrayKey] as $arrayKeyKey => $arrayKeyVal) {
-                    $languagesAssocArray[$arrayKeyVal] = $languagesArray[$langKey];
-                }
+        foreach ($languagesArray as $row => $info) {
+            if (!isset($info[$parentKey]) || empty($info[$parentKey])) {
+                continue;
             }
+            $languagesAssocArray[$info[$parentKey]] = $languagesArray[$row];
         }
-        
+
         return $languagesAssocArray;
     }
 
     /**
-     * Direct searching the value of the initial keys
-     * @param   array   $assoc      ('key' => 'value') : search the parent key
-     *                              with the value
-     * @param   string  $returnKey  get the value from this key. If null/ not
-     *                              set, it will return the previous value
-     * @return  string  the return value of the given value
+     * Direct searching the value of the initial keys.
+     *
+     * @param array  $assoc     ('key' => 'value') : search the parent key
+     *                          with the value
+     * @param string $returnKey get the value from this key. If null/ not
+     *                          set, it will return the previous value
+     *
+     * @return string the return value of the given value
      */
-    public function languagesAssoc($assoc=array(), $returnKey=null) {
+    public function languagesAssoc($assoc = array(), $returnKey = null)
+    {
         list($assocKey, $assocVal) = each($assoc);
         $languagesAssocArray = $this->languagesAssocArray($assocKey);
 
@@ -103,5 +112,4 @@ class LanguageSubtagRegistry {
 
         return $languagesAssocArray[$assocVal][$returnKey];
     }
-
 }
