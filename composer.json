@@ -1,0 +1,15 @@
+{
+    "name": "goldsky/iana-s-language-subtag-registry",
+    "description": "PHP Class for Language Tags based on Internet Assigned Numbers Authority (IANA)'s Registry",
+    "type": "library",
+    "authors": [
+        {
+            "name": "goldsky",
+            "email": "goldsky.milis@gmail.com"
+        }
+    ],
+    "autoload": {
+        "classmap": ["language-subtag-registry.php"]
+    },
+    "require": {}
+}
