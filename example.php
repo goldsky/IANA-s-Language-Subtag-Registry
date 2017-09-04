@@ -12,6 +12,7 @@
 die();
 
 include_once './language-subtag-registry.php';
+// or with Composer, after composer install, require 'vendor/autoload.php'
 $ianaLstr = new LanguageSubtagRegistry();
 $ianaLstr->readSource('language-subtag-registry');
 
